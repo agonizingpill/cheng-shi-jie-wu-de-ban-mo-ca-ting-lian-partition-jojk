@@ -1,6 +1,7 @@
-from sqlalchemy import Boolean, CheckConstraint, Column, Float, ForeignKey, Integer, JSON, String, Table
+from sqlalchemy import Boolean, CheckConstraint, Column, DateTime, Float, ForeignKey, Integer, JSON, String, Table
 
 from core.db import metadata
+from datetime import datetime, timezone
 
 
 optics_surveys = Table('optics_surveys', metadata,
@@ -12,6 +13,7 @@ optics_surveys = Table('optics_surveys', metadata,
     Column('clusters', Integer, nullable=False),
     Column('noise', Integer, nullable=False),
     Column('token', String(64), nullable=False, unique=True),
+    Column('created_at', DateTime, nullable=True, default=lambda: datetime.now(timezone.utc)),
     CheckConstraint('clusters >= 0'),
     CheckConstraint('noise >= 0'),
 )

@@ -73,3 +73,12 @@ label span { display:block; color:var(--soft); font-size:.875em }
 .floor-plan .closed-zone{fill:oklch(51% .24 350);fill-opacity:.58;stroke:oklch(81% .18 350);stroke-width:4}
 .floor-plan text{fill:oklch(94% .03 350);font:23px var(--body)}
 .floor-plan .low{fill:oklch(72% .2 350)}.floor-plan .ordinary{fill:oklch(81% .11 220)}
+
+.floor-readings-page .floor-board{display:grid;gap:1.25rem}
+.floor-readings-page .floor-board section{min-width:0}
+.conflict-card[data-state=open]{border-inline-color:oklch(52% .19 28)}
+.conflict-card[data-state=resolved]{opacity:.82}
+.conflict-card table{margin-block:.6rem}
+.conflict-card .fields{margin-block:.7rem 0}
+.claim-board,.reading-board{border-top:1px solid var(--line);padding-top:1rem}
+@media(max-width:720px){.conflict-card .fields{grid-template-columns:1fr}}

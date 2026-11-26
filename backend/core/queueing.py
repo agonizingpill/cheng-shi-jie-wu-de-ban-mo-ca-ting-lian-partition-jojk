@@ -14,7 +14,7 @@ def submit(user, payload):
     item = {'token': token, 'owner': user['sub'], 'input': payload}
     with broker.pipeline() as pipe:
         pipe.set(f'compute:{token}', json.dumps({'owner': user['sub'], 'status': 'queued'}), ex=86400)
-        pipe.rpush(QUEUE, json.dumps(item))
+        pipe.rpush(QUEUE, json.dumps(item, default=str))
         pipe.execute()
     return {'token': token, 'status': 'queued'}
 

@@ -12,6 +12,18 @@
 - 停练带与复测解封 `practice_holds`，字段为 `panel`（停练区）、`point`（触发踏点）、`review`（分析簿）、`shift`（课程时段）、`scope_key`（分区时段钥匙）、`reason`（围挡原因）、`status`（围挡状态）、`retest`（复测踏点）。模型约束位于 `backend/domain/practice_holds_model.py`，规则位于 `practice_holds_service.py`。
 - 课程与调区回执 `dance_blocks`，字段为 `course`（课目）、`shift`（开课时段）、`headcount`（参与人数）、`home_panel`（原分区）、`live_panel`（当前分区）、`move_note`（调区原因）、`state`（课程状态）。模型约束位于 `backend/domain/dance_blocks_model.py`，规则位于 `dance_blocks_service.py`。
 
+### 踏点领点、补传冲突与分组
+
+踏点页支持作业员在同区、同批（`survey`）内按 20 cm 网格领新点：
+
+1. 读取当前最新签认的 OPTICS `members`，只保留已复核、未涉及未决争议的读数。
+2. 至少有两个含有效读数的分组时，寻找欧氏距离最近的一对异组踏点。
+3. 以两点中点为目标，选择面板半开坐标范围内最近、且未被读数或有效领点占用的网格位。
+4. `POST /floor_readings/claim-point` 会用面板行锁、进程锁和 `(panel, survey, x_cm, y_cm)` 唯一约束避免并发领同一位置；未交读领点同时写入 `point_claims` 和踏点台账，重新分组不会删除。
+5. 断网补传与现场直录在同坐标产生不同踏点记录时，两条 `floor_readings` 均保留并生成 `reading_conflicts`；该位置不参与新点配对/网格空位。复核员通过 `POST /floor_readings/verify-step`（传选定踏点号）或 `/floor_readings/resolve-conflict` 选定后，选定记录变为已复核并恢复当前分组资格，另一条保留为 `rejected`。
+
+若当前有效分组不足两个，接口返回 409 并在信息中明确“暂时派不了新点”。
+
 ### 一天的业务操作
 
 1. 16:00 朱青核对东侧舞室的粉 A、蓝 B、白 C 胶带范围。

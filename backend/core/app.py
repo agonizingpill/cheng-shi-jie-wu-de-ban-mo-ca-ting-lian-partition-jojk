@@ -9,6 +9,7 @@ from core.db import metadata, transaction
 from core.config import SEED_DEMO
 from core.middleware import install
 from core.queueing import broker, view
+from core.schema_upgrade import ensure_runtime_schema
 from domain.routes import routers
 from scripts.seed_demo import seed
 
@@ -16,6 +17,7 @@ from scripts.seed_demo import seed
 async def lifespan(app):
     from core.db import engine
     metadata.create_all(engine)
+    ensure_runtime_schema()
     if SEED_DEMO:
         try:
             seed()
